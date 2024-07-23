@@ -8,7 +8,7 @@ namespace Banking.Application.Commands.UpdateAccount
         {
             RuleFor(x => x.AccountData.Name).NotEmpty();
             RuleFor(x => x.AccountData.PhoneNumber).NotEmpty();
-            RuleFor(x => x.AccountData.Money).NotEmpty();
+            RuleFor(x => x.AccountData.Money >= 0).NotEmpty();
         }
     }
 }

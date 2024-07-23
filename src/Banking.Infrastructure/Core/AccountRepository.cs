@@ -1,6 +1,8 @@
 ﻿using Banking.Domain;
 using Banking.Infrastructure.Common;
 using FluentResults;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace Banking.Infrastructure.Core
 {
@@ -64,6 +66,8 @@ namespace Banking.Infrastructure.Core
 
             return Result.Ok(entity);
         }
+
+        public Task<IDbContextTransaction> BeginTransactionAsync() => _context.Database.BeginTransactionAsync();
 
         private static Result<Account> AccountIsNotFoundError() => Result.Fail("Account with the following GUID ID is not found.");
     }

@@ -1,5 +1,6 @@
 ﻿using Banking.Domain;
 using FluentResults;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Banking.Infrastructure.Common
 {
@@ -10,5 +11,6 @@ namespace Banking.Infrastructure.Common
         public Task<Result<Account>> RemoveAccountAsync(Guid id);
         public Task<Result<Account>> UpdateAccountAsync(Account account);
         public Task<Result<IEnumerable<Account>>> GetAllAccountsAsync();
+        public Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }
