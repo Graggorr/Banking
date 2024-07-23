@@ -1,0 +1,25 @@
+﻿{
+  "profiles": {
+    "WebStore.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:18080",
+      "environmentVariables": {
+        "PORT": "18080",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "environmentVariables": {
+        "PORT": "8080"
+      },
+      "applicationUrl": "http://localhost:8080",
+      "publishAllPorts": true
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json"
+}
