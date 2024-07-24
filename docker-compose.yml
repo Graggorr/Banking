@@ -1,0 +1,28 @@
+version: '3.4'
+
+networks:
+  banking_network:
+    driver: bridge
+services:
+  database:
+    container_name: sqlserver
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    networks: 
+      - banking_network
+    ports:
+        - "1433:1433"
+    environment:
+      - ACCEPT_EULA=y
+      - SA_PASSWORD=Pass@word
+  banking.service:
+    container_name: api
+    networks: 
+      - banking_network
+    ports:
+      - "8080:8080"
+    depends_on: 
+      - database
+    image: ${DOCKER_REGISTRY-}bankingservice
+    build:
+      context: .
+      dockerfile: src/Banking.Service/Dockerfile
