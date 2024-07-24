@@ -1,11 +1,20 @@
 ﻿using Banking.Infrastructure.Core;
+using Microsoft.EntityFrameworkCore;
+using Banking.Extensions;
 
 namespace Banking.Service
 {
-    internal class DatabaseInitializer(BankingDbContext context)
+    internal class DatabaseInitializer(IConfiguration configuration)
     {
-        private readonly BankingDbContext _context = context;
+        private readonly IConfiguration _configuration = configuration;
 
-        public void Initialize() => _context.Database.EnsureCreated();
+        public void Initialize()
+        {
+            var options = new DbContextOptionsBuilder<BankingDbContext>()
+                .UseSqlServer(_configuration.GetSqlConnectionString("ASPNETCORE_ENVIRONMENT")).Options;
+            using var context = new BankingDbContext(options);
+
+            context.Database.EnsureCreated();
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace Banking.Application.Commands.UpdateAccount
         public async Task<Result<AccountData>> Handle(UpdateAccountRequest request, CancellationToken cancellationToken)
         {
             var accountData = request.AccountData;
-            var validationResult = BusinessValidation.ValidateAccount(accountData);
+            var validationResult = BusinessValidation.ValidateAccount(accountData, _repository);
 
             if (validationResult.IsFailed)
             {

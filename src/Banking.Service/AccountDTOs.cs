@@ -24,7 +24,7 @@ namespace Banking.Service
 
     //transactions
     public record class AddFundsRequest([FromRoute] Guid Id, [FromBody] double FundsAmount);
-    public record class AddFundsResponse(double LeftFundsAmount);
+    public record class AddFundsResponse(double FundsAmount);
     public record class WithdrawFundsRequest([FromRoute] Guid Id, [FromBody] double FundsAmount);
     public record class WithdrawFundsResponse(double FundsAmount);
     public record class TransferFundsRequest([FromRoute] Guid AccountIdToTakeFunds, [FromBody] TransferFundsRequestBody Body);

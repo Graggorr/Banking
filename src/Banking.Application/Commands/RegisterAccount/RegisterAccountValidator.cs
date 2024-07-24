@@ -2,9 +2,9 @@
 
 namespace Banking.Application.Commands.CreateAccount
 {
-    public class CreateAccountValidator: AbstractValidator<RegisterAccountRequest>
+    public class RegisterAccountValidator: AbstractValidator<RegisterAccountRequest>
     {
-        public CreateAccountValidator()
+        public RegisterAccountValidator()
         {
             RuleFor(x => x.AccountData.Name).NotEmpty();
             RuleFor(x => x.AccountData.PhoneNumber).NotEmpty();

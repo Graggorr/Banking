@@ -11,19 +11,21 @@ namespace Banking.Application.Transactions
 
         public async Task<Result<double>> Handle(TransferFundsRequest request, CancellationToken cancellationToken)
         {
-            var getAccountToTakeFundsTask = _repository.GetAccountAsync(request.AccountIdToTakeFunds);
-            var getAccountToSendFundsTask = _repository.GetAccountAsync(request.AccountIdToSendFunds);
-            var tasks = new Task<Result<Account>>[] { getAccountToTakeFundsTask, getAccountToSendFundsTask };
-            Task.WaitAll(tasks, cancellationToken);
-            var tasksResult = VerifyTaskResults(tasks);
+            var getAccountToTakeFundsResult = await _repository.GetAccountAsync(request.AccountIdToTakeFunds);
+            var getAccountToSendFundsResult = await _repository.GetAccountAsync(request.AccountIdToSendFunds);
 
-            if (tasksResult.IsFailed)
+            if (getAccountToSendFundsResult.IsFailed)
             {
-                return tasksResult;
+                return Result.Fail(getAccountToSendFundsResult.Errors);
             }
 
-            var accountToTakeFunds = getAccountToTakeFundsTask.Result.Value;
-            var accountToSendFunds = getAccountToSendFundsTask.Result.Value;
+            if (getAccountToTakeFundsResult.IsFailed)
+            {
+                return Result.Fail(getAccountToTakeFundsResult.Errors);
+            }
+
+            var accountToTakeFunds = getAccountToTakeFundsResult.Value;
+            var accountToSendFunds = getAccountToSendFundsResult.Value;
 
             try
             {
@@ -37,6 +39,7 @@ namespace Banking.Application.Transactions
                             $" Try to transfer less money.");
                     }
 
+                    accountToTakeFunds.MoneyAmount = withdrawFundsResult;
                     accountToSendFunds.MoneyAmount += request.AmountOfMoney;
                 }
             }
@@ -45,23 +48,9 @@ namespace Banking.Application.Transactions
                 return Result.Fail($"System cannot transfer funds. Exception: {exception.Message}");
             }
 
-            using var transaction = await _repository.BeginTransactionAsync();
-            var updateAccountToTakeFundsTask = _repository.UpdateAccountAsync(accountToTakeFunds);
-            var updateAccountToSendFundsTask = _repository.UpdateAccountAsync(accountToSendFunds);
-            tasks = [updateAccountToTakeFundsTask, updateAccountToSendFundsTask];
-            Task.WaitAll(tasks, cancellationToken);
-            tasksResult = VerifyTaskResults(tasks);
+            var result = await _repository.UpdateAccountRangeAsync([accountToSendFunds, accountToTakeFunds]);
 
-            if (tasksResult.IsFailed)
-            {
-                transaction.Rollback();
-
-                return tasksResult;
-            }
-
-            transaction.Commit();
-
-            return Result.Ok(accountToTakeFunds.MoneyAmount);
+            return result.IsFailed ? Result.Fail(result.Errors) : Result.Ok(accountToTakeFunds.MoneyAmount);
         }
 
         private static Result VerifyTaskResults(Task<Result<Account>>[] tasks)

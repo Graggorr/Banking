@@ -16,27 +16,27 @@ namespace Banking.Service
 
             group.MapPost(string.Empty, PostAccount);
             group.MapGet("/{id:guid}", GetAccount);
-            group.MapGet(string.Empty, GetAccount);
+            group.MapGet(string.Empty, GetAllAccounts);
             group.MapDelete("/{id:guid}", DeleteAccount);
             group.MapPut("/{id:guid}", PutAccount);
 
             //transactions
             group.MapPut("/transactions/withdraw/{id:guid}", WithdrawFunds);
             group.MapPut("/transactions/add/{id:guid}", AddFunds);
-            group.MapPut("/transactions/transfer/{id:guid}", TransferFunds);
+            group.MapPut("/transactions/transfer/{accountIdToTakeFunds:guid}", TransferFunds);
 
             return builder;
         }
 
-        private static async Task<Results<CreatedAtRoute<PostAccountResponse>, BadRequest<string>>> PostAccount(
+        private static async Task<Results<Ok<PostAccountResponse>, BadRequest<string>>> PostAccount(
             [FromBody] PostAccountRequest request,
             [FromServices] IMediator mediator)
         {
-            var createRequest = new RegisterAccountRequest(new AccountData(Guid.NewGuid(), request.Name, request.MoneyAmount, request.PhoneNumber));
-            var response = await mediator.Send(createRequest);
+            var registerRequest = new RegisterAccountRequest(new AccountData(Guid.NewGuid(), request.Name, request.MoneyAmount, request.PhoneNumber));
+            var response = await mediator.Send(registerRequest);
 
             return response.IsSuccess
-                ? TypedResults.CreatedAtRoute(new PostAccountResponse(response.Value), nameof(GetAccount), new { Id = response.Value })
+                ? TypedResults.Ok(new PostAccountResponse(response.Value))
                 : TypedResults.BadRequest(CreateErrorResponse(response.Errors));
         }
 

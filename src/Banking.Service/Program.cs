@@ -12,13 +12,12 @@ builder.Services.AddApplication();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseRouting();
+
 app.Services.GetService<DatabaseInitializer>().Initialize();
-app.MapGroup("banking").WithTags("Banking").MapAccounts();
+app.MapGroup("/api/banking").WithOpenApi().MapAccounts();
 app.Run();

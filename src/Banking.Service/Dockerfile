@@ -1,5 +1,3 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
@@ -9,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Banking.Service/Banking.Service.csproj", "src/Banking.Service/"]
-COPY ["src/Banking.Application.cs/Banking.Application.csproj", "src/Banking.Application.cs/"]
+COPY ["src/Banking.Application/Banking.Application.csproj", "src/Banking.Application/"]
 COPY ["src/Banking.Domain/Banking.Domain.csproj", "src/Banking.Domain/"]
 COPY ["src/Banking.Infrastructure/Banking.Infrastructure.csproj", "src/Banking.Infrastructure/"]
 RUN dotnet restore "./src/Banking.Service/Banking.Service.csproj"

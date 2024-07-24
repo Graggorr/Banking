@@ -5,14 +5,14 @@ using MediatR;
 
 namespace Banking.Application.Commands.CreateAccount
 {
-    public class CreateAccountRequestHandler(IAccountRepository repository) : IRequestHandler<RegisterAccountRequest, Result<Guid>>
+    public class RegisterAccountRequestHandler(IAccountRepository repository) : IRequestHandler<RegisterAccountRequest, Result<Guid>>
     {
         private readonly IAccountRepository _repository = repository;
 
         public async Task<Result<Guid>> Handle(RegisterAccountRequest request, CancellationToken cancellationToken)
         {
             var accountData = request.AccountData;
-            var result = BusinessValidation.ValidateAccount(accountData);
+            var result = BusinessValidation.ValidateAccount(accountData, _repository);
 
             if (result.IsFailed)
             {

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Banking.Domain\Banking.Domain.csproj" />
+    <ProjectReference Include="..\Banking.Extensions\Banking.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

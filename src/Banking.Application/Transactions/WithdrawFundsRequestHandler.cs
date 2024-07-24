@@ -38,9 +38,15 @@ namespace Banking.Application.Transactions
                 return Result.Fail($"You can't withdraw ${request.AmountOfMoney}. Your balance is ${account.MoneyAmount}. Try to withdraw less money.");
             }
 
+            getAccountResult.Value.MoneyAmount = withdrawResult;
             var updateResult = await _repository.UpdateAccountAsync(getAccountResult.Value);
 
-            return updateResult.ToResult();
+            if (updateResult.IsFailed)
+            {
+                return Result.Fail(updateResult.Errors);
+            }
+
+            return Result.Ok(withdrawResult);
         }
     }
 }

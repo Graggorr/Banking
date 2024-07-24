@@ -10,7 +10,8 @@ namespace Banking.Infrastructure.Common
         public Task<Result<Account>> GetAccountAsync(Guid id);
         public Task<Result<Account>> RemoveAccountAsync(Guid id);
         public Task<Result<Account>> UpdateAccountAsync(Account account);
+        public Task<Result<IEnumerable<Account>>> UpdateAccountRangeAsync(IEnumerable<Account> accounts);
         public Task<Result<IEnumerable<Account>>> GetAllAccountsAsync();
-        public Task<IDbContextTransaction> BeginTransactionAsync();
+        public Task<bool> IsPhoneNumberUnique(string phoneNumber);
     }
 }

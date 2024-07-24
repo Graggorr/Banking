@@ -1,6 +1,7 @@
 ﻿using Banking.Domain;
 using Banking.Infrastructure.Common;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
 
@@ -67,8 +68,43 @@ namespace Banking.Infrastructure.Core
             return Result.Ok(entity);
         }
 
-        public Task<IDbContextTransaction> BeginTransactionAsync() => _context.Database.BeginTransactionAsync();
+        public async Task<Result<IEnumerable<Account>>> UpdateAccountRangeAsync(IEnumerable<Account> accounts)
+        {
+            //to avoid concurrent exception in dbcontext and do not create a separate dbcontext instance
+            //in case of have heavy operation. It's been decided to update 2 instance one by one.
 
+            var entities = new List<Account>();
+
+            foreach (var account in accounts)
+            {
+                var entity = _context.Accounts.Find(account.Id);
+
+                if (entity is null)
+                {
+                    return Result.Fail($"{account.Id} is not contained.");
+                }
+
+                entities.Add(entity);
+            }
+
+            var transaction = _context.Database.BeginTransaction();
+
+            foreach (var entity in entities)
+            {
+                var account = accounts.First(x => x.Id.Equals(entity.Id));
+                entity.Name = account.Name;
+                entity.MoneyAmount = account.MoneyAmount;
+                entity.PhoneNumber = account.PhoneNumber;
+            }
+
+            transaction.Commit();
+
+            await _context.SaveChangesAsync();
+
+            return entities;
+        }
+
+        public async Task<bool> IsPhoneNumberUnique(string phoneNumber) => !await _context.Accounts.AnyAsync(x => x.PhoneNumber.Equals(phoneNumber));
         private static Result<Account> AccountIsNotFoundError() => Result.Fail("Account with the following GUID ID is not found.");
     }
 }
