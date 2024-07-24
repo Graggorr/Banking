@@ -1,11 +1,10 @@
 using Dapper;
 using System.Data.SqlClient;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
-namespace Banking.Tests.PositiveScenarios
+namespace Banking.Tests
 {
     [TestClass]
     public class IntegrationTests
