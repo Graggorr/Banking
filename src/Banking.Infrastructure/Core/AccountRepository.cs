@@ -2,7 +2,6 @@
 using Banking.Infrastructure.Common;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
 
 namespace Banking.Infrastructure.Core
@@ -87,8 +86,6 @@ namespace Banking.Infrastructure.Core
                 entities.Add(entity);
             }
 
-            var transaction = _context.Database.BeginTransaction();
-
             foreach (var entity in entities)
             {
                 var account = accounts.First(x => x.Id.Equals(entity.Id));
@@ -96,8 +93,6 @@ namespace Banking.Infrastructure.Core
                 entity.MoneyAmount = account.MoneyAmount;
                 entity.PhoneNumber = account.PhoneNumber;
             }
-
-            transaction.Commit();
 
             await _context.SaveChangesAsync();
 
